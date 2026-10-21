@@ -1,6 +1,5 @@
 const teaser = document.querySelector('.teaser');
 const backgrounds = document.querySelector('.backgrounds');
-const edgeTop = document.querySelector('.edge-top'), edgeBottom = document.querySelector('.edge-bottom');
 const layers = ['one','two','three','four'].map(name => document.querySelector('.color-'+name));
 const sources = ['assets/boost-brand-background.jpeg','assets/boost-background-2.jpeg','assets/boost-background-3.jpeg','assets/boost-background-4.jpeg'];
 let paused = false, elapsed = 0, previous = null, active = -1;
@@ -102,7 +101,7 @@ function setupFluid(images) {
     void main(){ uv=position*.5+.5; gl_Position=vec4(position,0.,1.); }`;
   const fragment = `precision mediump float;
     varying vec2 uv; uniform sampler2D currentImage; uniform sampler2D nextImage;
-    uniform float time; uniform float blend; uniform vec2 cover;
+    uniform float time; uniform float blend; uniform vec2 cover; uniform float screens;
     vec2 flow(vec2 p, float phase){
       float t=time*.14;
       vec2 wave=vec2(
@@ -114,7 +113,9 @@ function setupFluid(images) {
       return clamp(rotation*((p-.5)*.76)+.5+wave, .001, .999);
     }
     void main(){
-      vec2 p=(vec2(uv.x,1.-uv.y)-.5)*cover+.5;
+      // The canvas covers the whole page; mirror the image once per screen so every screen gets the full gradient.
+      float s=(1.-uv.y)*screens;
+      vec2 p=(vec2(uv.x,abs(mod(s+1.,2.)-1.))-.5)*cover+.5;
       vec3 a=texture2D(currentImage,flow(p,0.)).rgb;
       vec3 b=texture2D(nextImage,flow(p,0.)).rgb;
       // Soft mixing keeps the original brand palette and avoids abrupt cuts.
@@ -148,18 +149,23 @@ function setupFluid(images) {
   const timeUniform=gl.getUniformLocation(program,'time');
   const blendUniform=gl.getUniformLocation(program,'blend');
   const coverUniform=gl.getUniformLocation(program,'cover');
+  const screensUniform=gl.getUniformLocation(program,'screens');
+  let ratio=1;
   const imageAspect=images[0].width/images[0].height;
   gl.uniform1i(gl.getUniformLocation(program,'currentImage'),0);
   gl.uniform1i(gl.getUniformLocation(program,'nextImage'),1);
   function resize(){
-    const ratio=Math.min(window.devicePixelRatio||1,1.5);
-    canvas.width=Math.round(backgrounds.clientWidth*ratio);
-    canvas.height=Math.round(backgrounds.clientHeight*ratio);
+    const w=backgrounds.clientWidth, h=backgrounds.clientHeight;
+    ratio=Math.min(window.devicePixelRatio||1,1.5,Math.sqrt(4e6/(w*h)));
+    canvas.width=Math.round(w*ratio);
+    canvas.height=Math.round(h*ratio);
     gl.viewport(0,0,canvas.width,canvas.height);
-    const aspect=(canvas.width/canvas.height)/imageAspect;
+    const screens=h/innerHeight;
+    gl.uniform1f(screensUniform,screens);
+    const aspect=(w/(h/screens))/imageAspect;
     gl.uniform2f(coverUniform,Math.min(1,aspect),Math.min(1,1/aspect));
   }
-  resize(); new ResizeObserver(resize).observe(backgrounds);
+  resize(); new ResizeObserver(resize).observe(backgrounds); addEventListener('resize',resize);
   canvas.addEventListener('webglcontextlost',event=>{
     event.preventDefault(); renderFluid=null; canvas.remove(); active=-1;
   });
@@ -170,14 +176,13 @@ function setupFluid(images) {
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,textures[next]);
     gl.uniform1f(timeUniform,time/1000); gl.uniform1f(blendUniform,blend);
     gl.drawArrays(gl.TRIANGLES,0,6);
-    if(time-lastSample>90||time<lastSample){ lastSample=time; sampleEdges(); }
+    if(time-lastSample>90||time<lastSample){ lastSample=time; tintPage(); }
   };
-  function sampleEdges(){
-    const x=canvas.width>>1, visible=Math.round(innerHeight*canvas.height/backgrounds.clientHeight);
-    const read=y=>{ gl.readPixels(x,Math.max(0,Math.min(canvas.height-1,y)),1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel); return `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`; };
-    const top=read(canvas.height-2), bottom=read(canvas.height-visible+1);
-    edgeTop.style.backgroundColor=top; edgeBottom.style.backgroundColor=bottom;
-    document.documentElement.style.backgroundColor=top;
+  function tintPage(){
+    // Safari colours the status bar from the page background; keep it matched to the gradient at the top of the screen.
+    const y=canvas.height-1-Math.round(scrollY*ratio);
+    gl.readPixels(canvas.width>>1,Math.max(0,Math.min(canvas.height-1,y)),1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);
+    document.documentElement.style.backgroundColor=`rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
   }
 }
 function frame(now) {

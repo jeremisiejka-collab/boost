@@ -3,17 +3,15 @@
 @font-face{font-family:Archivo;src:url("assets/archivo-latin-ext-standard-normal.woff2") format("woff2-variations");font-weight:100 900;font-stretch:62% 125%;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 
 :root{--gutter:3.2vw;--display:Archivo,Space,Arial,sans-serif}
-*{box-sizing:border-box}html{background:#e2668a;color:#fff;scroll-behavior:smooth}body{margin:0;font-family:Space,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}html{background:#e2668a;color:#fff;scroll-behavior:smooth}body{position:relative;margin:0;font-family:Space,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 main{position:relative;z-index:1}
 a{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #ffffff70}a:hover{border-color:#fff}a:focus-visible{outline:2px solid white;outline-offset:6px}
 svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7}::selection{background:#fff;color:#794e9f}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-/* Full-bleed animated background, fixed behind everything so it also fills the areas under the phone's status and toolbar bars. */
-.backgrounds{position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;z-index:0;pointer-events:none;overflow:hidden;transform-origin:center;will-change:transform}
+/* Animated background spans the whole page and scrolls with it; nothing is pinned to the screen edges, so Safari floats its toolbar over the page instead of drawing a solid bar. */
+.backgrounds{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;transform-origin:center;will-change:transform}
 .color{position:absolute;inset:-80px;filter:blur(40px);background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;will-change:opacity}.color-one{background-image:url("assets/boost-brand-background.jpeg");opacity:1}.color-two{background-image:url("assets/boost-background-2.jpeg")}.color-three{background-image:url("assets/boost-background-3.jpeg")}.color-four{background-image:url("assets/boost-background-4.jpeg")}
-/* Thin strips touching the screen edges; Safari tints its status and tool bars from them, so their colour follows the gradient. */
-.edge{position:fixed;left:0;right:0;height:1px;z-index:2;pointer-events:none;background-color:#e2668a}.edge-top{top:0}.edge-bottom{bottom:0}
 .fluid-colors{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 
 /* Hero */
