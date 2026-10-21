@@ -1,5 +1,6 @@
 const teaser = document.querySelector('.teaser');
 const backgrounds = document.querySelector('.backgrounds');
+const edgeTop = document.querySelector('.edge-top'), edgeBottom = document.querySelector('.edge-bottom');
 const layers = ['one','two','three','four'].map(name => document.querySelector('.color-'+name));
 const sources = ['assets/boost-brand-background.jpeg','assets/boost-background-2.jpeg','assets/boost-background-3.jpeg','assets/boost-background-4.jpeg'];
 let paused = false, elapsed = 0, previous = null, active = -1;
@@ -153,13 +154,22 @@ function setupFluid(images) {
   canvas.addEventListener('webglcontextlost',event=>{
     event.preventDefault(); renderFluid=null; canvas.remove(); active=-1;
   });
+  const pixel=new Uint8Array(4); let lastSample=-1e9;
   backgrounds.appendChild(canvas);
   return (time,index,next,blend)=>{
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,textures[index]);
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,textures[next]);
     gl.uniform1f(timeUniform,time/1000); gl.uniform1f(blendUniform,blend);
     gl.drawArrays(gl.TRIANGLES,0,6);
+    if(time-lastSample>250||time<lastSample){ lastSample=time; sampleEdges(); }
   };
+  function sampleEdges(){
+    const x=canvas.width>>1, visible=Math.round(innerHeight*canvas.height/backgrounds.clientHeight);
+    const read=y=>{ gl.readPixels(x,Math.max(0,Math.min(canvas.height-1,y)),1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel); return `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`; };
+    const top=read(canvas.height-2), bottom=read(canvas.height-visible+1);
+    edgeTop.style.backgroundColor=top; edgeBottom.style.backgroundColor=bottom;
+    document.documentElement.style.backgroundColor=top;
+  }
 }
 function frame(now) {
   const dt=previous===null || document.hidden ? 0 : Math.min(now-previous,1000);

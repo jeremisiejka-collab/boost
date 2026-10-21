@@ -12,6 +12,8 @@ svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7}::sele
 /* Full-bleed animated background, fixed behind everything so it also fills the areas under the phone's status and toolbar bars. */
 .backgrounds{position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;z-index:0;pointer-events:none;overflow:hidden;transform-origin:center;will-change:transform}
 .color{position:absolute;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;will-change:opacity}.color-one{background-image:url("assets/boost-brand-background.jpeg");opacity:1}.color-two{background-image:url("assets/boost-background-2.jpeg")}.color-three{background-image:url("assets/boost-background-3.jpeg")}.color-four{background-image:url("assets/boost-background-4.jpeg")}
+/* Thin strips touching the screen edges; Safari tints its status and tool bars from them, so their colour follows the gradient. */
+.edge{position:fixed;left:0;right:0;height:3px;z-index:2;pointer-events:none;background-color:#e2668a}.edge-top{top:0}.edge-bottom{bottom:0}
 .fluid-colors{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 
 /* Hero */
