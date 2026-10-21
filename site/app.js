@@ -101,7 +101,7 @@ function setupFluid(images) {
       );
       float angle=sin(t*.45+phase)*.055;
       mat2 rotation=mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
-      return clamp(rotation*((p-.5)*.83)+.5+wave, .001, .999);
+      return clamp(rotation*((p-.5)*.76)+.5+wave, .001, .999);
     }
     void main(){
       vec2 p=(vec2(uv.x,1.-uv.y)-.5)*cover+.5;
@@ -143,13 +143,13 @@ function setupFluid(images) {
   gl.uniform1i(gl.getUniformLocation(program,'nextImage'),1);
   function resize(){
     const ratio=Math.min(window.devicePixelRatio||1,1.5);
-    canvas.width=Math.round(teaser.clientWidth*ratio);
-    canvas.height=Math.round(teaser.clientHeight*ratio);
+    canvas.width=Math.round(backgrounds.clientWidth*ratio);
+    canvas.height=Math.round(backgrounds.clientHeight*ratio);
     gl.viewport(0,0,canvas.width,canvas.height);
     const aspect=(canvas.width/canvas.height)/imageAspect;
     gl.uniform2f(coverUniform,Math.min(1,aspect),Math.min(1,1/aspect));
   }
-  resize(); new ResizeObserver(resize).observe(teaser);
+  resize(); new ResizeObserver(resize).observe(backgrounds);
   canvas.addEventListener('webglcontextlost',event=>{
     event.preventDefault(); renderFluid=null; canvas.remove(); active=-1;
   });
@@ -195,3 +195,19 @@ Promise.all(sources.map(src=>new Promise(resolve=>{
   }
   requestAnimationFrame(frame);
 });
+
+// Teaser section: words light up as the manifesto scrolls into view, pillars fade in.
+const manifesto=document.querySelector('.manifesto');
+manifesto.innerHTML=manifesto.textContent.trim().split(/\s+/).map(word=>`<span class="w">${word}</span>`).join(' ');
+const words=[...manifesto.querySelectorAll('.w')];
+function lightWords(){
+  const box=manifesto.getBoundingClientRect();
+  const progress=(innerHeight*.85-box.top)/(innerHeight*.5);
+  const lit=Math.round(Math.max(0,Math.min(1,progress))*words.length);
+  words.forEach((word,i)=>word.classList.toggle('on',i<lit));
+}
+addEventListener('scroll',lightWords,{passive:true}); addEventListener('resize',lightWords); lightWords();
+const pillars=document.querySelector('.pillars');
+new IntersectionObserver((entries,observer)=>{
+  if(entries.some(entry=>entry.isIntersecting)){ pillars.classList.add('in'); observer.disconnect(); }
+},{threshold:.2}).observe(pillars);

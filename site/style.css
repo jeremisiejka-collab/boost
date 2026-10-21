@@ -1,11 +1,62 @@
 @font-face{font-family:Space;src:url("assets/space-bold.ttf") format("truetype");font-weight:700;font-display:swap}
-*{box-sizing:border-box}html{background:#727cd3;color:#fff}body{margin:0;font-family:Space,Arial,sans-serif;-webkit-font-smoothing:antialiased}.teaser{position:relative;min-height:100svh;display:grid;place-items:center;background:url("assets/boost-brand-background.jpeg") center/cover no-repeat}h1{width:40%;max-width:760px;margin:0;line-height:0}h1 img{display:block;width:100%;height:auto;filter:brightness(0) invert(1)}footer{position:absolute;bottom:30px;left:3.2%;right:3.2%;display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:11px;font-weight:700;letter-spacing:.035em;line-height:1.3}footer p{margin:0}.soon{position:absolute;left:50%;transform:translateX(-50%)}a{color:inherit;text-decoration:none;display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #ffffff70}svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7}a:hover{border-color:#fff}a:focus-visible{outline:2px solid white;outline-offset:6px}::selection{background:#fff;color:#794e9f}
-@media(max-width:700px){h1{width:72%}.teaser{min-height:max(420px,100svh)}footer{left:22px;right:22px;bottom:max(25px,env(safe-area-inset-bottom));font-size:9px;letter-spacing:.01em}.soon{display:none}a{gap:9px}svg{width:14px;height:14px}}
+@font-face{font-family:Archivo;src:url("assets/archivo-latin-standard-normal.woff2") format("woff2-variations");font-weight:100 900;font-stretch:62% 125%;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Archivo;src:url("assets/archivo-latin-ext-standard-normal.woff2") format("woff2-variations");font-weight:100 900;font-stretch:62% 125%;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 
-.teaser{isolation:isolate;overflow:hidden}.backgrounds{position:absolute;inset:0;z-index:0;pointer-events:none}h1,footer{z-index:1}h1{position:relative}.color{position:absolute;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;will-change:opacity}.color-one{background-image:url("assets/boost-brand-background.jpeg");opacity:1}.color-two{background-image:url("assets/boost-background-2.jpeg")}.color-three{background-image:url("assets/boost-background-3.jpeg")}.color-four{background-image:url("assets/boost-background-4.jpeg")}
+:root{--gutter:3.2vw;--display:Archivo,Space,Arial,sans-serif}
+*{box-sizing:border-box}html{background:#e2668a;color:#fff;scroll-behavior:smooth}body{margin:0;font-family:Space,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{position:relative;z-index:1}
+a{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #ffffff70}a:hover{border-color:#fff}a:focus-visible{outline:2px solid white;outline-offset:6px}
+svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7}::selection{background:#fff;color:#794e9f}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-.fluid-colors{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:3;pointer-events:none}
+/* Full-bleed animated background, fixed behind everything so it also fills the areas under the phone's status and toolbar bars. */
+.backgrounds{position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;z-index:0;pointer-events:none;overflow:hidden;transform-origin:center;will-change:transform}
+.color{position:absolute;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat;opacity:0;will-change:opacity}.color-one{background-image:url("assets/boost-brand-background.jpeg");opacity:1}.color-two{background-image:url("assets/boost-background-2.jpeg")}.color-three{background-image:url("assets/boost-background-3.jpeg")}.color-four{background-image:url("assets/boost-background-4.jpeg")}
+.fluid-colors{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 
-.boost-logo{--charge:0;--energy:0}.boost-trigger{display:block;width:100%;padding:15px 0;margin:-15px 0;border:0;background:transparent;cursor:pointer;touch-action:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;transform:translate3d(0,0,0);transform-origin:center;will-change:transform}.boost-trigger img{pointer-events:none;filter:brightness(0) invert(1)}.boost-trigger:focus-visible{outline:1px solid #fff;outline-offset:16px;border-radius:2px}.boost-meter{position:absolute;top:calc(100% + 40px);left:50%;width:110px;height:2px;transform:translateX(-50%);background:#ffffff25;opacity:0;transition:opacity .25s}.boost-meter span{display:block;width:100%;height:100%;background:#fff;transform-origin:left;transform:scaleX(var(--charge))}.charging .boost-meter{opacity:1}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:700px){.boost-meter{top:calc(100% + 51px)}}
+/* Hero */
+.teaser{position:relative;min-height:100vh;min-height:100svh;display:grid;place-items:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.corners,.hero-footer{position:absolute;left:var(--gutter);right:var(--gutter);display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:11px;font-weight:700;letter-spacing:.035em;line-height:1.3}
+.corners{top:calc(env(safe-area-inset-top) + 22px)}.hero-footer{bottom:calc(env(safe-area-inset-bottom) + 30px)}
+.corners p,.hero-footer p{margin:0}.soon{position:absolute;left:50%;transform:translateX(-50%)}
+.corners a svg{width:14px;height:14px;animation:nudge 2.4s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}
+h1{position:relative;width:40%;max-width:760px;margin:0;line-height:0}h1 img{display:block;width:100%;height:auto;filter:brightness(0) invert(1)}
 
-.backgrounds{transform-origin:center;will-change:transform}.boost-trigger{backface-visibility:hidden}
+/* Teaser section */
+.about{padding:clamp(90px,16vh,180px) var(--gutter) clamp(70px,12vh,140px);max-width:1500px;margin:0 auto}
+.kicker{margin:0 0 28px;font-size:11px;font-weight:700;letter-spacing:.12em;opacity:.85}
+.manifesto{margin:0;font-family:var(--display);font-stretch:125%;font-weight:800;text-transform:uppercase;font-size:clamp(34px,6.4vw,104px);line-height:.95;letter-spacing:-.01em;max-width:14ch;text-wrap:balance}
+.manifesto .w{display:inline-block;opacity:.28;transition:opacity .5s ease}.manifesto .w.on{opacity:1}
+.lead{margin:clamp(28px,4vw,48px) 0 0;max-width:560px;font-size:clamp(16px,1.35vw,19px);line-height:1.5;font-weight:700}
+.pillars{list-style:none;margin:clamp(56px,8vw,110px) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pillars li{position:relative;padding:28px 26px 30px;border:1px solid #ffffff55;border-radius:4px;background:#ffffff14;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1),background .3s}
+.pillars li:nth-child(2){transition-delay:.12s}.pillars li:nth-child(3){transition-delay:.24s}
+.pillars.in li{opacity:1;transform:none}.pillars li:hover{background:#ffffff24}
+.num{font-size:11px;letter-spacing:.1em;opacity:.8}
+.pillars h3{margin:46px 0 14px;font-family:var(--display);font-stretch:125%;font-weight:800;text-transform:uppercase;font-size:clamp(30px,3.2vw,46px);line-height:1}
+.pillars p{margin:0;font-size:15px;line-height:1.5}
+
+/* Marquee */
+.marquee{overflow:hidden;border-block:1px solid #ffffff55;padding:22px 0;white-space:nowrap}
+.marquee-track{display:inline-flex;animation:marquee 32s linear infinite}
+.marquee span{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:clamp(28px,4.4vw,64px);line-height:1;padding-right:.4em}.marquee i{font-style:normal;font-size:.6em;vertical-align:.25em;padding:0 .3em}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* Closing */
+.end{padding:clamp(80px,14vh,160px) var(--gutter) calc(env(safe-area-inset-bottom) + 30px);max-width:1500px;margin:0 auto}
+.end-title{margin:0 0 clamp(60px,10vh,120px);font-family:var(--display);font-stretch:125%;font-weight:800;text-transform:uppercase;font-size:clamp(40px,8vw,130px);line-height:.92}
+.end-row{display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:11px;font-weight:700;letter-spacing:.035em}.end-row p{margin:0}
+
+/* Boost interaction */
+.boost-logo{--charge:0;--energy:0}.boost-trigger{display:block;width:100%;padding:15px 0;margin:-15px 0;border:0;background:transparent;cursor:pointer;touch-action:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;transform:translate3d(0,0,0);transform-origin:center;will-change:transform;backface-visibility:hidden}.boost-trigger img{pointer-events:none;filter:brightness(0) invert(1)}.boost-trigger:focus-visible{outline:1px solid #fff;outline-offset:16px;border-radius:2px}.boost-meter{position:absolute;top:calc(100% + 40px);left:50%;width:110px;height:2px;transform:translateX(-50%);background:#ffffff25;opacity:0;transition:opacity .25s}.boost-meter span{display:block;width:100%;height:100%;background:#fff;transform-origin:left;transform:scaleX(var(--charge))}.charging .boost-meter{opacity:1}
+
+@media(max-width:700px){
+  :root{--gutter:22px}
+  h1{width:72%}
+  .corners,.hero-footer,.end-row{font-size:9px;letter-spacing:.01em}.corners{top:calc(env(safe-area-inset-top) + 18px)}.hero-footer{bottom:calc(env(safe-area-inset-bottom) + 25px)}
+  .soon{display:none}a{gap:9px}svg{width:14px;height:14px}
+  .pillars{grid-template-columns:1fr;gap:12px}.pillars h3{margin:22px 0 10px}.pillars li{padding:22px 20px 24px}
+  .marquee{padding:16px 0}.boost-meter{top:calc(100% + 30px)}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.marquee-track,.corners a svg{animation:none}.manifesto .w{opacity:1}.pillars li{opacity:1;transform:none;transition:none}}
