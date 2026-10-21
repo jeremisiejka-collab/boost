@@ -1,5 +1,4 @@
 const teaser = document.querySelector('.teaser');
-const toggle = document.querySelector('.motion-toggle');
 const backgrounds = document.querySelector('.backgrounds');
 const layers = ['one','two','three','four'].map(name => document.querySelector('.color-'+name));
 const sources = ['assets/boost-brand-background.jpeg','assets/boost-background-2.jpeg','assets/boost-background-3.jpeg','assets/boost-background-4.jpeg'];
@@ -9,7 +8,6 @@ let renderFluid = null;
 let canvas = null;
 const logo = document.querySelector('.boost-logo');
 const trigger = document.querySelector('.boost-trigger');
-const prompt = document.querySelector('.boost-prompt');
 const status = document.querySelector('#boost-status');
 let holding = false, automatic = false, charge = 0, energy = 0;
 let stage = 'idle';
@@ -17,7 +15,6 @@ let pressureClock = 0, releaseAge = 10;
 function setStage(value, text) {
   if(stage === value) return;
   stage = value; teaser.dataset.boostState = value;
-  prompt.textContent = text;
 }
 function beginBoost(auto = false) {
   if(holding || energy > .12) return;
@@ -83,12 +80,6 @@ function updateBoost(dt) {
   logo.style.setProperty('--charge',charge.toFixed(4));
   logo.style.setProperty('--energy',energy.toFixed(4));
 }
-toggle.addEventListener('click', () => {
-  paused = !paused;
-  teaser.classList.toggle('paused', paused);
-  toggle.setAttribute('aria-pressed', String(paused));
-  toggle.setAttribute('aria-label', paused ? 'Wznów animację tła' : 'Wstrzymaj animację tła');
-});
 document.addEventListener('visibilitychange', () => { previous = null; if(document.hidden) { automatic=false; releaseBoost(); } });
 
 function setupFluid(images) {
@@ -101,7 +92,7 @@ function setupFluid(images) {
     void main(){ uv=position*.5+.5; gl_Position=vec4(position,0.,1.); }`;
   const fragment = `precision mediump float;
     varying vec2 uv; uniform sampler2D currentImage; uniform sampler2D nextImage;
-    uniform float time; uniform float blend;
+    uniform float time; uniform float blend; uniform vec2 cover;
     vec2 flow(vec2 p, float phase){
       float t=time*.14;
       vec2 wave=vec2(
@@ -113,7 +104,7 @@ function setupFluid(images) {
       return clamp(rotation*((p-.5)*.83)+.5+wave, .001, .999);
     }
     void main(){
-      vec2 p=vec2(uv.x,1.-uv.y);
+      vec2 p=(vec2(uv.x,1.-uv.y)-.5)*cover+.5;
       vec3 a=texture2D(currentImage,flow(p,0.)).rgb;
       vec3 b=texture2D(nextImage,flow(p,0.)).rgb;
       // Soft mixing keeps the original brand palette and avoids abrupt cuts.
@@ -146,6 +137,8 @@ function setupFluid(images) {
   });
   const timeUniform=gl.getUniformLocation(program,'time');
   const blendUniform=gl.getUniformLocation(program,'blend');
+  const coverUniform=gl.getUniformLocation(program,'cover');
+  const imageAspect=images[0].width/images[0].height;
   gl.uniform1i(gl.getUniformLocation(program,'currentImage'),0);
   gl.uniform1i(gl.getUniformLocation(program,'nextImage'),1);
   function resize(){
@@ -153,6 +146,8 @@ function setupFluid(images) {
     canvas.width=Math.round(teaser.clientWidth*ratio);
     canvas.height=Math.round(teaser.clientHeight*ratio);
     gl.viewport(0,0,canvas.width,canvas.height);
+    const aspect=(canvas.width/canvas.height)/imageAspect;
+    gl.uniform2f(coverUniform,Math.min(1,aspect),Math.min(1,1/aspect));
   }
   resize(); new ResizeObserver(resize).observe(teaser);
   canvas.addEventListener('webglcontextlost',event=>{
