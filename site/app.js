@@ -209,3 +209,7 @@ function lightWords(){
   words.forEach((word,i)=>word.classList.toggle('on',i<lit));
 }
 addEventListener('scroll',lightWords,{passive:true}); addEventListener('resize',lightWords); lightWords();
+const those=document.querySelector('.those');
+new IntersectionObserver((entries,observer)=>{
+  if(entries.some(entry=>entry.isIntersecting)){ those.classList.add('in'); observer.disconnect(); }
+},{threshold:.3}).observe(those);
