@@ -232,7 +232,7 @@ let lastScroll=scrollY;
 addEventListener('scroll',()=>{ elapsed+=Math.abs(scrollY-lastScroll)*7; lastScroll=scrollY; },{passive:true});
 
 // Countdown. Set the exact start here once the date is confirmed (Warsaw time, +01:00 in March).
-const EVENT_START=new Date('2027-03-01T10:00:00+01:00');
+const EVENT_START=new Date('2027-03-12T10:00:00+01:00');
 const clockUnits=Object.fromEntries([...document.querySelectorAll('.n')].map(el=>[el.dataset.unit,el]));
 const tickBar=document.querySelector('.tick-bar span');
 function setUnit(name,value,digits){
