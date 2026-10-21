@@ -230,3 +230,21 @@ lines.forEach(line=>reveal.observe(line));
 // Scrolling pushes the colours forward, so the gradient moves with the swipe.
 let lastScroll=scrollY;
 addEventListener('scroll',()=>{ elapsed+=Math.abs(scrollY-lastScroll)*7; lastScroll=scrollY; },{passive:true});
+
+// Countdown. Set the exact start here once the date is confirmed (Warsaw time, +01:00 in March).
+const EVENT_START=new Date('2027-03-01T10:00:00+01:00');
+const clockUnits=Object.fromEntries([...document.querySelectorAll('.n')].map(el=>[el.dataset.unit,el]));
+const tickBar=document.querySelector('.tick-bar span');
+function setUnit(name,value,digits){
+  const el=clockUnits[name], text=String(value).padStart(digits,'0');
+  if(el.textContent===text) return;
+  el.textContent=text; el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick');
+}
+function updateClock(){
+  const left=Math.max(0,EVENT_START-Date.now()), s=Math.floor(left/1000);
+  setUnit('days',Math.floor(s/86400),3); setUnit('hours',Math.floor(s%86400/3600),2);
+  setUnit('minutes',Math.floor(s%3600/60),2); setUnit('seconds',s%60,2);
+  tickBar.style.transform=`scaleX(${(left%60000)/60000})`;
+  requestAnimationFrame(updateClock);
+}
+updateClock();
