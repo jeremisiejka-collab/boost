@@ -1,0 +1,7 @@
+Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)
+
+https://scripts.sil.org/OFL
+
+Unbounded
+Copyright 2022 The Unbounded Project Authors (https://github.com/googlefonts/unbounded)
+https://scripts.sil.org/OFL
