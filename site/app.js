@@ -196,18 +196,16 @@ Promise.all(sources.map(src=>new Promise(resolve=>{
   requestAnimationFrame(frame);
 });
 
-// Teaser section: words light up as the manifesto scrolls into view, pillars fade in.
+// Teaser section: words light up one by one as the statement scrolls into view.
 const manifesto=document.querySelector('.manifesto');
-manifesto.innerHTML=manifesto.textContent.trim().split(/\s+/).map(word=>`<span class="w">${word}</span>`).join(' ');
+manifesto.querySelectorAll('.strong,.light').forEach(line=>{
+  line.innerHTML=line.textContent.trim().split(/[ \n\t]+/).map(word=>`<span class="w">${word}</span>`).join(' ');
+});
 const words=[...manifesto.querySelectorAll('.w')];
 function lightWords(){
   const box=manifesto.getBoundingClientRect();
-  const progress=(innerHeight*.85-box.top)/(innerHeight*.5);
+  const progress=(innerHeight*.9-box.top)/(innerHeight*.45);
   const lit=Math.round(Math.max(0,Math.min(1,progress))*words.length);
   words.forEach((word,i)=>word.classList.toggle('on',i<lit));
 }
 addEventListener('scroll',lightWords,{passive:true}); addEventListener('resize',lightWords); lightWords();
-const pillars=document.querySelector('.pillars');
-new IntersectionObserver((entries,observer)=>{
-  if(entries.some(entry=>entry.isIntersecting)){ pillars.classList.add('in'); observer.disconnect(); }
-},{threshold:.2}).observe(pillars);
