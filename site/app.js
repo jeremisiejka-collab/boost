@@ -83,6 +83,15 @@ function updateBoost(dt) {
 }
 document.addEventListener('visibilitychange', () => { previous = null; if(document.hidden) { automatic=false; releaseBoost(); } });
 
+function soften(image) {
+  // Shrinking to a tiny size drops the grain; scaling back up with smoothing leaves only soft colour.
+  const small=document.createElement('canvas'); small.width=64; small.height=36;
+  const big=document.createElement('canvas'); big.width=512; big.height=288;
+  const s=small.getContext('2d'), b=big.getContext('2d');
+  s.imageSmoothingQuality='high'; s.drawImage(image,0,0,small.width,small.height);
+  b.imageSmoothingQuality='high'; b.drawImage(small,0,0,big.width,big.height);
+  return big;
+}
 function setupFluid(images) {
   canvas = document.createElement('canvas');
   canvas.className = 'fluid-colors';
@@ -133,7 +142,7 @@ function setupFluid(images) {
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,image);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,soften(image));
     return texture;
   });
   const timeUniform=gl.getUniformLocation(program,'time');
@@ -161,7 +170,7 @@ function setupFluid(images) {
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,textures[next]);
     gl.uniform1f(timeUniform,time/1000); gl.uniform1f(blendUniform,blend);
     gl.drawArrays(gl.TRIANGLES,0,6);
-    if(time-lastSample>250||time<lastSample){ lastSample=time; sampleEdges(); }
+    if(time-lastSample>90||time<lastSample){ lastSample=time; sampleEdges(); }
   };
   function sampleEdges(){
     const x=canvas.width>>1, visible=Math.round(innerHeight*canvas.height/backgrounds.clientHeight);
@@ -206,20 +215,13 @@ Promise.all(sources.map(src=>new Promise(resolve=>{
   requestAnimationFrame(frame);
 });
 
-// Teaser section: words light up one by one as the statement scrolls into view.
-const manifesto=document.querySelector('.manifesto');
-manifesto.querySelectorAll('.strong,.light').forEach(line=>{
-  line.innerHTML=line.textContent.trim().split(/[ \n\t]+/).map(word=>`<span class="w">${word}</span>`).join(' ');
-});
-const words=[...manifesto.querySelectorAll('.w')];
-function lightWords(){
-  const box=manifesto.getBoundingClientRect();
-  const progress=(innerHeight*.9-box.top)/(innerHeight*.45);
-  const lit=Math.round(Math.max(0,Math.min(1,progress))*words.length);
-  words.forEach((word,i)=>word.classList.toggle('on',i<lit));
-}
-addEventListener('scroll',lightWords,{passive:true}); addEventListener('resize',lightWords); lightWords();
-const those=document.querySelector('.those');
-new IntersectionObserver((entries,observer)=>{
-  if(entries.some(entry=>entry.isIntersecting)){ those.classList.add('in'); observer.disconnect(); }
-},{threshold:.3}).observe(those);
+// Teaser section: each line rises in as it scrolls into view.
+const lines=document.querySelectorAll('.those li');
+const reveal=new IntersectionObserver(entries=>entries.forEach(entry=>{
+  if(entry.isIntersecting){ entry.target.classList.add('in'); reveal.unobserve(entry.target); }
+}),{threshold:.35,rootMargin:'0px 0px -8% 0px'});
+lines.forEach(line=>reveal.observe(line));
+
+// Scrolling pushes the colours forward, so the gradient moves with the swipe.
+let lastScroll=scrollY;
+addEventListener('scroll',()=>{ elapsed+=Math.abs(scrollY-lastScroll)*7; lastScroll=scrollY; },{passive:true});
