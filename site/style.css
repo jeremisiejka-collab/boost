@@ -46,6 +46,13 @@ h1{position:relative;width:40%;max-width:760px;margin:0;line-height:0}h1 img{dis
 .l{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
 .tick-bar{margin-top:clamp(28px,5vh,56px);height:2px;background:#ffffff30;overflow:hidden}.tick-bar span{display:block;height:100%;background:#fff;transform-origin:left;transform:scaleX(0)}
 
+/* Hidden date: scrambling, blurred letters and digits until the date is announced */
+.redact{display:inline-block;min-width:6.4ch;padding:0 .45em;border-radius:3px;background:#ffffff22;color:transparent;text-shadow:0 0 4px #fff,0 0 1px #fffc;text-align:center;animation:redact 2.6s ease-in-out infinite}
+@keyframes redact{50%{background:#ffffff38}}
+.scrambled .n{filter:blur(.06em);opacity:.92}
+.scrambled + .tick-bar span{animation:sweep 2.2s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes sweep{0%{transform:scaleX(0);transform-origin:left}50%{transform:scaleX(1);transform-origin:left}50.01%{transform-origin:right}100%{transform:scaleX(0);transform-origin:right}}
+
 /* Boost interaction */
 .boost-logo{--charge:0;--energy:0}.boost-trigger{display:block;width:100%;padding:15px 0;margin:-15px 0;border:0;background:transparent;cursor:pointer;touch-action:none;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;transform:translate3d(0,0,0);transform-origin:center;will-change:transform;backface-visibility:hidden}.boost-trigger img{pointer-events:none;filter:brightness(0) invert(1)}.boost-trigger:focus-visible{outline:1px solid #fff;outline-offset:16px;border-radius:2px}.boost-meter{position:absolute;top:calc(100% + 40px);left:50%;width:110px;height:2px;transform:translateX(-50%);background:#ffffff25;opacity:0;transition:opacity .25s}.boost-meter span{display:block;width:100%;height:100%;background:#fff;transform-origin:left;transform:scaleX(var(--charge))}.charging .boost-meter{opacity:1}
 
@@ -56,4 +63,4 @@ h1{position:relative;width:40%;max-width:760px;margin:0;line-height:0}h1 img{dis
   .soon{display:none}a{gap:9px}svg{width:14px;height:14px}
   .units{grid-template-columns:1fr 1fr;row-gap:34px}.unit:nth-child(3){padding-left:0;border-left:0}.n{font-size:clamp(64px,19vw,96px)}.those{gap:34px}.those li{font-size:clamp(28px,8.4vw,40px)}.rule,.end{font-size:9px;letter-spacing:.01em}.boost-meter{top:calc(100% + 30px)}
 }
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.corners a svg{animation:none}.those li{opacity:1;transform:none}.n.tick{animation:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.corners a svg{animation:none}.those li{opacity:1;transform:none}.n.tick{animation:none}.redact,.scrambled + .tick-bar span{animation:none}}
